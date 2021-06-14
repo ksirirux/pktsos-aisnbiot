@@ -1,48 +1,114 @@
+/*
+ Supported DEVIO NB-DEVKIT I Board 
+    |  Do not use PIN   |
+    |      16 TX        |
+    |      17 RX        |
+    |      4 EINT       |
+    |   26 power key    |
+    |     27 reset      |
+
+    If you have any questions, please see more details at https://www.facebook.com/AISDEVIO
+*/
 #include <Arduino.h>
+#include <ArduinoJson.h>
+
+#include "AIS_SIM7020E_API.h"
+String address    = "206.189.145.76";               //Your IPaddress or mqtt server url
+String serverPort = "1883";               //Your server port
+String clientID   = "pkt-01-00001";               //Your client id < 120 characters
+String pubTopic      = "/data/01-00001";               //Your topic     < 128 characters
+String subTopic =  "/cmd/01-00001";
+String payload    = "HelloWorld!";    //Your payload   < 500 characters
+String username   = "khomkrit";               //username for mqtt server, username <= 100 characters
+String password   = "tonkla0709";               //password for mqtt server, password <= 100 characters 
+unsigned int subQoS       = 2;
+unsigned int pubQoS       = 2;
+unsigned int pubRetained  = 0;
+unsigned int pubDuplicate = 0;
 
 
+long interval = 5000;           //time in millisecond 
+unsigned long previousMillis = 0;
+int cnt = 0;
 
-#include "Magellan_SIM7020E.h"
+AIS_SIM7020E_API nb;
 
-Magellan_SIM7020E magel;          
+void setupMQTT();
+void connectStatus();
+void callback(String &topic,String &payload, String &QoS,String &retained);
+void setTimeReadData(int min);
 
-String dimmer_state="0";
-String dimmer="0";
-String payload;
-const int ledPin = 2;
+DynamicJsonDocument doc(1024); //Object for convert json txt
+ 
 
-// Setting PWM properties
-const int freq = 5000;
-const int ledChannel = 0;
-const int resolution = 8;
-
-void setup() 
-{
-  Serial.begin(115200);
-    
-  magel.begin();            //Init Magellan LIB
-
-  payload="{\"dimmer\":0}"; //Please provide payload with json format
-  magel.report(payload);    //Initial dimmer data to Magellan 
-
-  ledcSetup(ledChannel, freq, resolution);
-  ledcAttachPin(ledPin, ledChannel);
-  ledcWrite(ledChannel, 255);
+void setup() {
+   Serial.begin(115200);
+  
+  nb.begin();
+  setupMQTT();
+  nb.setCallback(callback);   
+  previousMillis = millis();            
 }
 
-void loop() 
-{
-  /*
-    Example control the LED on board from Magellan IoT Platform
-  */
-  dimmer_state=magel.getControl("dimmer"); //Get dimmer data from Magellan
 
-  if(dimmer_state.indexOf("40300")==-1)   //Response data is not 40300
+void loop() {   
+  nb.MQTTresponse();
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis >= interval) {
+        cnt++;
+        connectStatus();
+        nb.publish(pubTopic,payload+String(cnt));      
+//      nb.publish(topic, payload, pubQoS, pubRetained, pubDuplicate);      //QoS = 0, 1, or 2, retained = 0 or 1, dup = 0 or 1
+        previousMillis = currentMillis;  
+  }
+}
+
+//=========== MQTT Function ================
+void setupMQTT(){
+  if(!nb.connectMQTT(address,serverPort,clientID,username,password)){ 
+     Serial.println("\nconnectMQTT");
+  }
+    nb.subscribe(subTopic,subQoS);
+//  nb.unsubscribe(topic); 
+}
+void connectStatus(){
+    if(!nb.MQTTstatus()){
+        if(!nb.NBstatus()){
+           Serial.println("reconnectNB ");
+           nb.begin();
+        }
+       Serial.println("reconnectMQ ");
+       setupMQTT();
+    }   
+}
+void callback(String &topic,String &payload, String &QoS,String &retained){
+  Serial.println("-------------------------------");
+  Serial.println("# Message from Topic \""+topic+"\" : "+nb.toString(payload));
+  Serial.println("# QoS = "+QoS);
+  deserializeJson(doc, nb.toString(payload));
+  JsonObject obj = doc.as<JsonObject>();
+  int cmd =  obj[String("cmd")];
+  switch (cmd)
   {
-    dimmer=dimmer_state;
+  case 1 : {
+          Serial.println("Recieve 1 cmd"); 
+          //Serial.println(obj[String("time")].as<String>());
+          setTimeReadData(obj[String("time")]);
+    }break;
+  case 2 : Serial.println("Recieve 2" ); break;
+  case 9 : Serial.println("Read Data "); break;
+  
+  default:
+    break;
   }
 
-  Serial.print("dimmer ");
-  Serial.println(dimmer);
-  ledcWrite(ledChannel, dimmer.toInt());   //Control the LED on board
+  
+  if(retained.indexOf(F("1"))!=-1){
+    Serial.println("# Retained = "+retained);
+  }
+}
+
+void setTimeReadData(int min){
+  interval = min*60000;
+  Serial.println("interval set to "+String(min)+ " min");
 }

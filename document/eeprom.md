@@ -1,0 +1,2 @@
+[[EEPROM]]
+https://www.modulemore.com/article/46/%E0%B8%95%E0%B8%B1%E0%B8%A7%E0%B8%AD%E0%B8%A2%E0%B9%88%E0%B8%B2%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%83%E0%B8%8A%E0%B9%89-eeprom-%E0%B8%9A%E0%B8%99-esp32
