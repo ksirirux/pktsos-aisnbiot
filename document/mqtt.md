@@ -15,7 +15,7 @@ $> mosquitto_pub -h localhost -t "/cmd/01-00001" -m {/"cmd/":1}  -u "khomkrit" -
 
 $> mosquitto_pub -h localhost -t "/cmd/01-00001" -m "{"cmd":1,"time":1}"  -u "khomkrit" -P "tonkla0709" 
 
-$> osquitto_pub -h localhost -t "/cmd/01-00001" -q 2  -m "{"cmd":9,"time":1}"  -u "khomkrit" -P "tonkla0709  
+$> mosquitto_pub -h localhost -t "/cmd/01-00001" -q 2  -m "{"cmd":9,"time":1}"  -u "khomkrit" -P "tonkla0709  
   -q for Qos 1 2 
   
 
