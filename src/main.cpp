@@ -11,6 +11,8 @@
 */
 #include <Arduino.h>
 #include <ArduinoJson.h>
+#include <EEPROM.h>
+
 
 #include "AIS_SIM7020E_API.h"
 #include "mqttParam.h"
@@ -18,6 +20,16 @@
 #include "ClosedCube_HDC1080.h"
 #include <Ultrasonic.h>
 #include "global.h"
+#include "EEPROM_writeall.h"
+#include "eepromAddress.h"
+
+
+//For interupt
+#ifdef ESP8266 || ESP32
+#define ISR_PREFIX ICACHE_RAM_ATTR
+#else
+#define ISR_PREFIX
+#endif
 
 AIS_SIM7020E_API nb;
 ClosedCube_HDC1080 hdc1080;
@@ -27,20 +39,22 @@ Ultrasonic ultrasonic(14, 15);
 
 String address = MQTT_SERVER;  //Your IPaddress or mqtt server url
 String serverPort = MQTT_PORT; //Your server port
-char *deviceID = "60c9e927643cf850d09eed66";
-char *cmdChannel = "6210323";
-char *deviceName = "Tester Nb-iot";
-String topic = "pktsos/";
+char *deviceID ;//= "60c9e927643cf850d09eed66";
+char *cmdChannel ;//= "6210323";
+char *deviceName = "WATPOTIBUNLUNG-iot";
+//String topic = "pktsos/";
 //String pubTopic = "pktsos/data"; //Your topic     < 128 characters
 //String subTopic = "cmd/01-00001";
 String payload;                  //Your payload   < 500 characters
 String username = MQTT_USER;     //username for mqtt server, username <= 100 characters
 String password = MQTT_PASSWORD; //password for mqtt server, password <= 100 characters
-unsigned int subQoS = 0;
-unsigned int pubQoS = 0;
-unsigned int pubRetained = 0;
-unsigned int pubDuplicate = 0;
 
+unsigned int subQoS =1;
+unsigned int pubQoS = 1;
+unsigned int pubRetained = 1;
+unsigned int pubDuplicate = 1;
+
+int deviceState = 0; // 0 test 1 real
 //Channel Recieve
 const char MQTTChannel[] = "pktsos/%s/cmd";
 char CH[30];
@@ -54,15 +68,18 @@ char EVENT[200];
 /************************************
  * Station Parameter
  *************************************/
-int stationHeight = 400;
-int lackLevel = 20;
-int normalLevel = 80;
-int warningLevel = 120;
-int dangerLevel = 200;
+int stationHeight = 355;
+int lackLevel = 40;
+int normalLevel =140;
+int warnLevel = 200;
+int dangerLevel = 250;
 int rainFactor = 2;
 
-long interval = 60000; //time in millisecond
+int interval = 15; //in minute
+#define SECONDS_DS(seconds) ((seconds)*1000UL);
+
 unsigned long previousMillis = 0;
+
 
 int distance, beforeLevel;
 
@@ -76,10 +93,30 @@ void setTimeReadData(int min);
 void clearJson();
 void sendDataToServer();
 int sort_desc(const void *cmp1, const void *cmp2);
-void sendLogMsg(String msg);
+void sendLogMsg(String logType,String msg);
 void regisDevice();
 void printParameter();
 int messureWaterLevel();
+
+void readDefaultParam();
+
+struct myMillis {
+  unsigned long offset = 0;
+  unsigned long get() { return millis() - offset; }
+  void reset() { offset = millis(); }
+  void set(unsigned long value) { offset = millis() - value; }
+};
+myMillis MM;
+
+struct eepromData {
+  char data[30];
+};
+
+
+
+
+void writeEEPROM(int address, String data);
+eepromData readEEPROM(int address) ;
 
 //JSON
 StaticJsonDocument<400> JSONencoder;
@@ -89,17 +126,72 @@ char buff[400];
 
 DynamicJsonDocument doc(1024); //Object for convert json txt
 
+#ifndef REED_PIN
+#define REED_PIN 13 // for rainguage
+#endif
+
+int rainCount;
+
+ISR_PREFIX void rainCountFunc()
+{
+  rainCount = rainCount + 1;
+  Serial.print("raincount");
+  Serial.println(rainCount);
+}
+
+
+void writeDefaultParam() {
+
+  Serial.println("WRITE DEFAULT PARAM");
+  writeEEPROM(ADS_DEVICEID, "60c9e927643cf850d09eed66");
+  delay(1000);
+  writeEEPROM(ADS_CMDCHANNEL, "6210323");
+  delay(500);
+  EEPROM_writeAnything(ADS_INTERVAL, interval);
+  delay(200);
+  EEPROM_writeAnything(ADS_STATIONHEIGHT, stationHeight);
+  delay(200);
+  EEPROM_writeAnything(ADS_LACKLEVEL, lackLevel);
+  delay(200);
+  EEPROM_writeAnything(ADS_NORMALLEVEL, normalLevel);
+  delay(200);
+  EEPROM_writeAnything(ADS_WARNLEVEL, warnLevel);
+  delay(200);
+  EEPROM_writeAnything(ADS_DANGERLEVEL, dangerLevel);
+  delay(200);
+  EEPROM_writeAnything(ADS_RAINFACTOR, rainFactor);
+  delay(200);
+  EEPROM_writeAnything(ADS_DEVICESTATE,deviceState);
+  delay(200);
+ 
+}
+
 void setup()
 {
   Serial.begin(115200);
-
-  Serial.printf("Device Name : %s \n", deviceName);
+  EEPROM.begin(EEPROM_SIZE);
   delay(1000);
-  Serial.printf("Device ID : %s \n", deviceID);
+ // writeDefaultParam();
+  delay(1000);
+  readDefaultParam();
+  delay(1000);
+  deviceID = readEEPROM(ADS_DEVICEID).data;
+  Serial.printf("DEVICE ID : %s\n", deviceID);
+  delay(1000);
+
+  cmdChannel = readEEPROM(ADS_CMDCHANNEL).data;
+  delay(500);
+  Serial.printf("Channel :%s \n", cmdChannel);
+  Serial.printf("Device Name : %s \n", deviceName);
   delay(1000);
   Serial.printf("Software : %s \n", APP_NAME);
   delay(1000);
   Serial.printf("version : %s \n", APP_VERSION);
+
+  
+
+  pinMode(REED_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(REED_PIN), rainCountFunc, FALLING);
 
   delay(1000);
   printParameter();
@@ -114,16 +206,26 @@ void setup()
   sendDataToServer();
 
   previousMillis = millis();
-
 }
 
 void loop()
 {
   nb.MQTTresponse();
-  unsigned long currentMillis = millis();
+  unsigned long duration = SECONDS_DS(interval*60);
+   if(MM.get() > duration){
+       
+       sendDataToServer();
+        
+        MM.reset();
+      }
+ /* unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= interval)
+  {
+    detachInterrupt(digitalPinToInterrupt(REED_PIN));
+    
 
-    sendDataToServer();
+    attachInterrupt(digitalPinToInterrupt(REED_PIN), rainCountFunc, FALLING);
+  }*/
 }
 
 //=========== MQTT Function ================
@@ -133,6 +235,7 @@ void setupMQTT()
   {
     Serial.println("\nconnectMQTT");
   }
+  cmdChannel = readEEPROM(ADS_CMDCHANNEL).data;
   sprintf(CH, MQTTChannel, cmdChannel);
   nb.subscribe(CH, subQoS);
   //  nb.unsubscribe(topic);
@@ -156,7 +259,9 @@ enum CMD
   REBOOT,
   SETTIME,
   READDATA,
-  SETPARAM
+  SETPARAM,
+  SETSTATE,
+  SENDPARAM,
 }; // 1 Reboot  2 SETTIME 3 ReadData
 void callback(String &topic, String &payload, String &QoS, String &retained)
 {
@@ -172,7 +277,7 @@ void callback(String &topic, String &payload, String &QoS, String &retained)
   case REBOOT:
   { //0
     payload = "{\"event\":\"Rebooting\"}";
-    sendLogMsg(payload);
+    sendLogMsg("log",payload);
     Serial.println("Reboot in 10 sec.");
     for (size_t i = 0; i < 10; i++)
     {
@@ -185,12 +290,14 @@ void callback(String &topic, String &payload, String &QoS, String &retained)
   break;
   case SETTIME: //1
   {
-    int time = obj[String("time")];
-    sprintf(EVENT, "{\"event\":\"Set new interval %d min\",\"field\":\"duration\",\"value\":%d}", time, time);
+    interval = obj[String("time")];
+    if (interval ==0) return;
+    sprintf(EVENT, "{\"event\":\"Set new interval %d min\",\"field\":\"interval\",\"value\":%d}",interval, interval);
 
-    sendLogMsg(EVENT);
-    Serial.printf("Set interval :%i min \n", time);
-    setTimeReadData(time);
+    sendLogMsg("log",EVENT);
+    Serial.printf("Set interval :%i min \n",interval);
+    EEPROM_writeAnything(ADS_INTERVAL,interval);
+    //setTimeReadData(interval);
   }
   break;
 
@@ -198,7 +305,7 @@ void callback(String &topic, String &payload, String &QoS, String &retained)
   { //2
     Serial.println('Read Data');
     payload = "{\"event\":\"Read Station Data\"}";
-    sendLogMsg(payload);
+    sendLogMsg("log",payload);
     sendDataToServer();
   }
   break;
@@ -220,9 +327,9 @@ void callback(String &topic, String &payload, String &QoS, String &retained)
     {
       normalLevel = value;
     }
-    else if (String(field) == "warningLevel")
+    else if (String(field) == "warnLevel")
     {
-      warningLevel = value;
+      warnLevel = value;
     }
     else if (String(field) == "dangerLevel")
     {
@@ -236,11 +343,29 @@ void callback(String &topic, String &payload, String &QoS, String &retained)
     {
     }
     printParameter();
-    sprintf(EVENT, "{\"event\":\"Set new parameter %s   %d\",\"field\":\"%s\",\"value\":%d}", field,value,field,value);
-    sendLogMsg(EVENT);
+    sprintf(EVENT, "{\"event\":\"Set new parameter %s   %d\",\"field\":\"%s\",\"value\":%d}", field, value, field, value);
+
+    sendLogMsg("log",EVENT);
   }
   break;
+  case SETSTATE : {
+    deviceState = obj[String("state")];
+    sprintf(EVENT, "{\"event\":\"Set device state %s \",\"field\":\"state\",\"value\":%d}",
+           deviceState==0 ? "test":"real",deviceState);
+    Serial.println(EVENT);
+    
+    sendLogMsg("log",EVENT);
+    EEPROM_writeAnything(ADS_DEVICESTATE,deviceState);
+  }break;
+  case SENDPARAM :{ //5
+      sprintf(EVENT, "{\"event\":\"send Device Parameter \"}");
+      sendLogMsg("log",EVENT);
+      delay(1000);
+      sprintf(EVENT,"{\"height\":%d,\"normalLevel\":%d,\"lackLevel\":%d,\"warnLevel\":%d,\"dangerLevel\":%d,\"rainFactor\":%d,\"interval\":%d,\"deviceState\":%d}",stationHeight,normalLevel,lackLevel,warnLevel,dangerLevel,rainFactor,interval,deviceState);
+      sendLogMsg("param",EVENT);
 
+
+  }
   default:
     break;
   }
@@ -251,21 +376,24 @@ void callback(String &topic, String &payload, String &QoS, String &retained)
   }
 }
 
-void sendLogMsg(String msg)
+void sendLogMsg(String logType,String msg)
 {
   connectStatus();
+  deviceID = readEEPROM(ADS_DEVICEID).data;
   Serial.printf("send log to server : %s \n", msg);
-
+  if (logType == "log")
   sprintf(TOPIC, MQTTTopic, deviceID, "log");
+  else if (logType=="param")
+  sprintf(TOPIC, MQTTTopic, deviceID, "param");
 
-  nb.publish(TOPIC, msg);
+  nb.publish(TOPIC, msg,pubQoS,pubRetained,pubDuplicate);
 }
 
-void setTimeReadData(int min)
+/*void setTimeReadData(int min)
 {
   interval = min * 60000;
   Serial.println("interval set to " + String(min) + " min");
-}
+}*/
 
 void sendDataToServer()
 {
@@ -276,35 +404,41 @@ void sendDataToServer()
   Serial.println(nb.getSignal());
   int waterLevel = messureWaterLevel();
 
-  Serial.printf("Before = %d water level : %d \n" ,beforeLevel,waterLevel);
-  
+  Serial.printf("Before = %d water level : %d \n", beforeLevel, waterLevel);
+
   float diffRate = 0;
-  if (beforeLevel-waterLevel != 0)
+  if (beforeLevel - waterLevel != 0)
   {
-    diffRate = (waterLevel - beforeLevel) * 3600000 / (interval*100.0); // unit in m/hr
+    diffRate = (waterLevel - beforeLevel) * 60 / (interval * 100.0); // unit in m/hr
   }
   beforeLevel = waterLevel;
 
-  int rainCount = random(0, 20);
-  Serial.printf("Rain count = %d \n",rainCount);
+  Serial.printf("Rain count = %d \n", rainCount);
   float rainFall = rainCount * rainFactor / 10.0;
 
   String temperature = String(hdc1080.readTemperature());
   String humidity = String(hdc1080.readHumidity());
   String Light = String(analogRead(lightSensorPin));
   String status;
-  if (waterLevel <= lackLevel) status = "LACK";
-  else if(waterLevel > lackLevel && waterLevel <= normalLevel) status = "NORMAL";
-  else if (waterLevel > normalLevel && waterLevel <= warningLevel) status = "WARNING";
-  else if (waterLevel > warningLevel && waterLevel <= dangerLevel) status = "DANGER";
-  else if(waterLevel> dangerLevel) status="EXTREME";
+  if (waterLevel <= lackLevel)
+    status = "LACK";
+  else if (waterLevel > lackLevel && waterLevel <= normalLevel)
+    status = "NORMAL";
+  else if (waterLevel > normalLevel && waterLevel <= warnLevel)
+    status = "WARNING";
+  else if (waterLevel > warnLevel && waterLevel <= dangerLevel)
+    status = "DANGER";
+  else if (waterLevel > dangerLevel)
+    status = "EXTREME";
 
-
-
-  payload = "{\"temperature\":" + temperature + ",\"humidity\":" + humidity + ",\"light\":" + Light + ",\"waterLevel\":" + waterLevel + ",\"diffRate\":" + diffRate + ",\"rainFall\":" + rainFall +",\"status\":\""+status +"\",\"rssi\":" + nb.getSignal() + "}";
+  if (deviceState==0)
+    payload = "{\"test\":true,\"temperature\":" + temperature + ",\"humidity\":" + humidity + ",\"light\":" + Light + ",\"waterLevel\":" + waterLevel + ",\"diffRate\":" + diffRate + ",\"rainFall\":" + rainFall + ",\"status\":\"" + status + "\",\"rssi\":" + nb.getSignal() + "}";
+  else
+    payload = "{\"temperature\":" + temperature + ",\"humidity\":" + humidity + ",\"light\":" + Light + ",\"waterLevel\":" + waterLevel + ",\"diffRate\":" + diffRate + ",\"rainFall\":" + rainFall + ",\"status\":\"" + status + "\",\"rssi\":" + nb.getSignal() + "}";
+  deviceID = readEEPROM(ADS_DEVICEID).data;
   sprintf(TOPIC, MQTTTopic, deviceID, "data");
-  nb.publish(TOPIC, payload);
-
+  nb.publish(TOPIC, payload,pubQoS,pubRetained,pubDuplicate);
+  rainCount = 0;
   previousMillis = millis();
 }
 
@@ -331,7 +465,7 @@ int sort_desc(const void *cmp1, const void *cmp2)
 
 void regisDevice()
 {
-  sendLogMsg("{\"event\":\"Restart Device\"}");
+  sendLogMsg("log","{\"event\":\"Restart Device\"}");
 }
 
 void printParameter()
@@ -340,28 +474,83 @@ void printParameter()
   Serial.printf("Station interval : %d min \n", interval / 60000);
   Serial.printf("lack Water level : %d cm \n", lackLevel);
   Serial.printf("normal water level : %d cm \n", normalLevel);
-  Serial.printf("warning water level : %d cm \n", warningLevel);
+  Serial.printf("warning water level : %d cm \n", warnLevel);
   Serial.printf("danger water level : %d cm \n", dangerLevel);
   Serial.printf("Rain factor : %d  \n", rainFactor);
+  Serial.printf("Device state : %s \n",deviceState ==0 ? "test":"real");
 }
 
+int messureWaterLevel()
+{
 
-int messureWaterLevel (){
-
-  int dist[5];
-  for (size_t i = 0; i < 5; i++)
+  int dist[10];
+  for (size_t i = 0; i < 10; i++)
   {
     dist[i] = ultrasonic.read();
+    Serial.printf("Distance = %d\n",dist[i]);
     delay(1000);
   }
   int distLength = sizeof(dist) / sizeof(dist[0]);
   qsort(dist, distLength, sizeof(dist[0]), sort_desc);
 
-  int distance = round((dist[1] + dist[2] + dist[3]) / 3);
-  
-  
-  int waterLevel = stationHeight - distance;
-  
-  return waterLevel;
+  int distance = round((dist[2] + dist[3] + dist[4]+dist[5] + dist[6] + dist[7]) / 6);
 
+  int waterLevel = stationHeight - distance;
+
+  return waterLevel;
+}
+
+
+
+void readDefaultParam() {
+  Serial.println("SET DEFAULT PARAM");
+
+  EEPROM_readAnything(ADS_STATIONHEIGHT, stationHeight);
+  delay(100);
+  EEPROM_readAnything(ADS_LACKLEVEL, lackLevel);
+  delay(100);
+  EEPROM_readAnything(ADS_NORMALLEVEL, normalLevel);
+  delay(100);
+  EEPROM_readAnything(ADS_WARNLEVEL, warnLevel);
+  delay(100);
+  EEPROM_readAnything(ADS_DANGERLEVEL, dangerLevel);
+  delay(100);
+  EEPROM_readAnything(ADS_RAINFACTOR, rainFactor);
+  delay(100);
+  EEPROM_readAnything(ADS_INTERVAL, interval);
+  delay(100);
+  EEPROM_readAnything(ADS_DEVICESTATE,deviceState);
+  delay(100);
+ 
+}
+
+eepromData readEEPROM(int address) {
+
+  unsigned char k;
+  uint8_t len = 0;
+  eepromData v;
+  k = EEPROM.read(address);
+  while (k != '\0' && len < 30) {
+    k = EEPROM.read(address + len);
+    v.data[len] = k;
+    len++;
+  }
+  v.data[len] = '\0';
+  return v;
+}
+
+
+
+
+/**********************************
+ * Write EEPROM
+* https://circuits4you.com/2018/10/16/arduino-reading-and-writing-string-to-eeprom/
+***********************************/
+void writeEEPROM(int address, String data) {
+  int _size = data.length();
+  for (int i = 0; i < _size; i++) {
+    EEPROM.write(i + address, data[i]);
+  }
+  EEPROM.write(address + _size, '\0');
+  EEPROM.commit();
 }
