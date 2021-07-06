@@ -9,11 +9,13 @@
 
     If you have any questions, please see more details at https://www.facebook.com/AISDEVIO
 */
+
+
+#define TEST 1  //DEVICE ID 
+
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <EEPROM.h>
-
-
 #include "AIS_SIM7020E_API.h"
 #include "mqttParam.h"
 #include <Wire.h>
@@ -22,7 +24,6 @@
 #include "global.h"
 #include "EEPROM_writeall.h"
 #include "eepromAddress.h"
-
 
 //For interupt
 #ifdef ESP8266 || ESP32
@@ -143,9 +144,9 @@ ISR_PREFIX void rainCountFunc()
 void writeDefaultParam() {
 
   Serial.println("WRITE DEFAULT PARAM");
-  writeEEPROM(ADS_DEVICEID, "60c9e927643cf850d09eed66");
+  writeEEPROM(ADS_DEVICEID, DEVICEID);
   delay(1000);
-  writeEEPROM(ADS_CMDCHANNEL, "6210323");
+  writeEEPROM(ADS_CMDCHANNEL, CMDCHANNEL);
   delay(500);
   EEPROM_writeAnything(ADS_INTERVAL, interval);
   delay(200);
@@ -171,7 +172,7 @@ void setup()
   Serial.begin(115200);
   EEPROM.begin(EEPROM_SIZE);
   delay(1000);
- // writeDefaultParam();
+  writeDefaultParam();
   delay(1000);
   readDefaultParam();
   delay(1000);
