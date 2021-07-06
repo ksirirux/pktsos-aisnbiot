@@ -16,12 +16,12 @@
 
 //DEVICE
 #ifdef WATPO
-    #define DEVICEID "60c9e927643cf850d09eed66"
+    #define DEVICEID "60c9e927643cf850d09eed61"
     #define CMDCHANNEL "6210323"
 #endif
 
 #ifdef TEST
-    #define DEVICEID "60c9e927643cf850d09eed61"
+    #define DEVICEID "60c9e927643cf850d09eed66"
     #define CMDCHANNEL "6210361"
 #endif
 

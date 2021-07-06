@@ -172,7 +172,7 @@ void setup()
   Serial.begin(115200);
   EEPROM.begin(EEPROM_SIZE);
   delay(1000);
-  writeDefaultParam();
+  //writeDefaultParam();
   delay(1000);
   readDefaultParam();
   delay(1000);
@@ -366,9 +366,11 @@ void callback(String &topic, String &payload, String &QoS, String &retained)
       sendLogMsg("param",EVENT);
 
 
-  }
-  default:
-    break;
+  }break;
+  default:{
+     sprintf(EVENT, "{\"event\":\"Unknow Command\"}");
+    sendLogMsg("log",EVENT);
+    }break;
   }
 
   if (retained.indexOf(F("1")) != -1)
