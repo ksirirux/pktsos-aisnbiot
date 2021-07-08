@@ -22,7 +22,7 @@ MEM::MEM(){
 };
 
 void MEM::init(){
-    EEPROM.begin(EEPROM_SIZE);
+    EEPROM.begin(512);
 }
 
 eepromData MEM::readEEPROM(int address){
