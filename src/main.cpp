@@ -18,7 +18,9 @@
 */
 
 
-#define TEST 1  //DEVICE ID 
+#define MONKEY 1  //DEVICE ID 
+#define WRITESTATE 0 //0 not write 1 write
+#define WRITESTATE 0 //0 not write 1 write
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
@@ -59,7 +61,7 @@ String username = MQTT_USER;     //username for mqtt server, username <= 100 cha
 String password = MQTT_PASSWORD; //password for mqtt server, password <= 100 characters
 
 unsigned int subQoS =0;
-unsigned int pubQoS = 1;
+unsigned int pubQoS = 0;
 unsigned int pubRetained = 0;
 unsigned int pubDuplicate = 0;
 
@@ -181,7 +183,10 @@ void setup()
   Serial.begin(115200);
   EEPROM.begin(512);
   delay(1000);
-  writeDefaultParam();
+  if (WRITESTATE){
+    writeDefaultParam();
+  }
+    
   delay(1000);
   readDefaultParam();
   delay(1000);
