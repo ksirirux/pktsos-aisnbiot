@@ -5,7 +5,7 @@
  * ****************************/
 #define EEPROM_SIZE 512
 #define ADS_CMDCHANNEL 0
-#define ADS_DEVICEID 100
+#define ADS_DEVICEID 30
 
 
 #define ADS_INTERVAL 60
