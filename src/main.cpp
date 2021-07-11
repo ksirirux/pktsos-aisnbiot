@@ -50,10 +50,10 @@ String payload;                  //Your payload   < 500 characters
 String username = MQTT_USER;     //username for mqtt server, username <= 100 characters
 String password = MQTT_PASSWORD; //password for mqtt server, password <= 100 characters
 
-unsigned int subQoS =1;
-unsigned int pubQoS = 1;
-unsigned int pubRetained = 1;
-unsigned int pubDuplicate = 1;
+unsigned int subQoS =0;
+unsigned int pubQoS = 0;
+unsigned int pubRetained = 0;
+unsigned int pubDuplicate = 0;
 
 int deviceState = 0; // 0 test 1 real
 //Channel Recieve
