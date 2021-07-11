@@ -21,7 +21,6 @@
 #define MONKEY 1  //DEVICE ID 
 #define WRITESTATE 0 //0 not write 1 write
 
-
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <EEPROM.h>
