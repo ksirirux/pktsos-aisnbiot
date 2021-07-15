@@ -70,11 +70,11 @@
     #define DEVICEID "60c9e927643cf850d09eed75"
     #define CMDCHANNEL "6210378"
     #define DEVICENAME "MONKEY STA"
-    #define HEIGHT 300
+    #define HEIGHT 245
     #define LACK   10
     #define NORMAL 70
-    #define WARN 100
-    #define DANGER 130
+    #define WARN 110
+    #define DANGER 140
     #define RAINFACTOR 2
 #endif
 

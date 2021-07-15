@@ -20,7 +20,8 @@
 
 #define MONKEY 1  //DEVICE ID 
 #define WRITESTATE 0 //0 not write 1 write
-#define WRITESTATE 0 //0 not write 1 write
+
+#include <WiFi.h>
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
@@ -33,6 +34,7 @@
 #include "eepromAddress.h"
 #include "global.h"
 #include "EEPROM_writeall.h"
+#include <esp_bt.h>
 
 
 //For interupt
@@ -151,6 +153,9 @@ ISR_PREFIX void rainCountFunc()
   Serial.println(rainCount);
 }
 
+//sleep mode 
+#define TIME_MICRO_SECONDS 1000000ULL 
+
 
 void writeDefaultParam() {
 
@@ -221,6 +226,12 @@ void setup()
   sendDataToServer();
 
   previousMillis = millis();
+  unsigned long duration = SECONDS_DS(interval*60);
+  esp_sleep_enable_timer_wakeup(duration); 
+   
+    WiFi.disconnect(true);
+    btStop();
+  
 }
 
 void loop()
@@ -232,12 +243,13 @@ void loop()
        sendDataToServer();
         
         MM.reset();
+     // 
       }
  
     if(touchRead(33) <2){
       messureWaterLevel();
     }
-   
+    esp_light_sleep_start();
     
     
       
