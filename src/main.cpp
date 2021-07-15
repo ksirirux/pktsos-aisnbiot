@@ -20,8 +20,11 @@
 
 #define MONKEY 1  //DEVICE ID 
 #define WRITESTATE 0 //0 not write 1 write
+<<<<<<< HEAD
 
 #include <WiFi.h>
+=======
+>>>>>>> 9ca33dc876b680c5406367780c41565ab458b34a
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
