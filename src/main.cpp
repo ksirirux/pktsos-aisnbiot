@@ -18,14 +18,11 @@
 */
 
 
-#define MONKEY 1  //DEVICE ID 
-#define WRITESTATE 0 //0 not write 1 write
-<<<<<<< HEAD
+#define KLONGHUAKLONG 1  //DEVICE ID 
+#define WRITESTATE 1 //0 not write 1 write
+
 
 #include <WiFi.h>
-=======
->>>>>>> 9ca33dc876b680c5406367780c41565ab458b34a
-
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <EEPROM.h>
@@ -167,7 +164,7 @@ void writeDefaultParam() {
   delay(1000);
   writeEEPROM(ADS_CMDCHANNEL, CMDCHANNEL);
   delay(500);
-  EEPROM_writeAnything(ADS_INTERVAL, 5);
+  EEPROM_writeAnything(ADS_INTERVAL, 10);
   delay(200);
   EEPROM_writeAnything(ADS_STATIONHEIGHT, HEIGHT);
   delay(200);
@@ -230,7 +227,7 @@ void setup()
 
   previousMillis = millis();
   unsigned long duration = SECONDS_DS(interval*60);
-  esp_sleep_enable_timer_wakeup(duration); 
+ // esp_sleep_enable_timer_wakeup(duration); 
    
     WiFi.disconnect(true);
     btStop();
@@ -252,7 +249,7 @@ void loop()
     if(touchRead(33) <2){
       messureWaterLevel();
     }
-    esp_light_sleep_start();
+    //esp_light_sleep_start();
     
     
       
