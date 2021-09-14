@@ -18,7 +18,7 @@
 */
 
 
-#define TEST 1  //DEVICE ID 
+#define PHOTOTYPE 1  //DEVICE ID 
 #define WRITESTATE 1 //0 not write 1 write
 
 
@@ -88,7 +88,7 @@ int warnLevel = 200;
 int dangerLevel = 250;
 int rainFactor = 2;
 
-int interval = 15; //in minute
+int interval = 10; //in minute
 #define SECONDS_DS(seconds) ((seconds)*1000UL);
 
 unsigned long previousMillis = 0;
@@ -216,6 +216,8 @@ void setup()
   delay(1000);
   printParameter();
 
+  //beforeLevel = messureWaterLevel();
+
   hdc1080.begin(0x40);
   nb.begin();
   setupMQTT();
@@ -227,10 +229,10 @@ void setup()
 
   previousMillis = millis();
   unsigned long duration = SECONDS_DS(interval*60);
-  esp_sleep_enable_timer_wakeup(duration); 
+  //esp_sleep_enable_timer_wakeup(duration); 
    
-    WiFi.disconnect(true);
-    btStop();
+  //  WiFi.disconnect(true);
+  //  btStop();
   
 }
 
@@ -249,8 +251,10 @@ void loop()
     if(touchRead(33) <2){
       messureWaterLevel();
     }
-    esp_light_sleep_start();
+   // esp_light_sleep_start();
     
+   //Serial.println(nb.getSignal());
+   //delay(1000);
     
       
 
