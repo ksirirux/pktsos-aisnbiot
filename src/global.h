@@ -92,4 +92,17 @@
 #endif
 
 
+#ifdef WATPAR
+    #define DEVICEID "61404414605a5f374ca0605d"
+    #define CMDCHANNEL "6210380"
+    #define DEVICENAME "MONKEY STA"
+    #define HEIGHT 214
+    #define LACK   30
+    #define NORMAL 140
+    #define WARN 160
+    #define DANGER 200
+    #define RAINFACTOR 2
+#endif
+
+
 
