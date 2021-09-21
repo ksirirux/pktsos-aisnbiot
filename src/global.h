@@ -17,6 +17,19 @@
     #define RAINFACTOR 2
 #endif
 
+#ifdef PHOTOTYPE
+    #define DEVICEID "60c9e927643cf850d09eed5f"
+    #define CMDCHANNEL "6210399"
+    #define DEVICENAME "PHOYOTYPE"
+    #define HEIGHT 264
+    #define LACK  30
+    #define NORMAL 110
+    #define WARN 130
+    #define DANGER 160
+    #define RAINFACTOR 2
+#endif
+
+
 #ifdef TEST
     
     #define DEVICEID "60c9e927643cf850d09eed66"
@@ -46,7 +59,7 @@
 #ifdef KAONIYOM
     #define DEVICEID "60c9e927643cf850d09eed67"
     #define CMDCHANNEL "6210311"
-    #define DEVICENAME "TEST ทดสอบ"
+    #define DEVICENAME "KAONIYOM"
     #define HEIGHT 367
     #define LACK   50
     #define NORMAL 160
