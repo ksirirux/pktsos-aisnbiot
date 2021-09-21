@@ -11,9 +11,9 @@
     #define DEVICENAME "TEST ทดสอบ"
     #define HEIGHT 355
     #define LACK  40
-    #define NORMAL 140
-    #define WARN 200
-    #define DANGER 250
+    #define NORMAL 120
+    #define WARN 140
+    #define DANGER 180
     #define RAINFACTOR 2
 #endif
 
