@@ -17,6 +17,19 @@
     #define RAINFACTOR 2
 #endif
 
+#ifdef PHOTOTYPE
+    #define DEVICEID "60c9e927643cf850d09eed5f"
+    #define CMDCHANNEL "6210399"
+    #define DEVICENAME "PHOYOTYPE"
+    #define HEIGHT 264
+    #define LACK  30
+    #define NORMAL 110
+    #define WARN 130
+    #define DANGER 160
+    #define RAINFACTOR 2
+#endif
+
+
 #ifdef TEST
     
     #define DEVICEID "60c9e927643cf850d09eed66"
@@ -46,7 +59,7 @@
 #ifdef KAONIYOM
     #define DEVICEID "60c9e927643cf850d09eed67"
     #define CMDCHANNEL "6210311"
-    #define DEVICENAME "TEST ทดสอบ"
+    #define DEVICENAME "KAONIYOM"
     #define HEIGHT 367
     #define LACK   50
     #define NORMAL 160
@@ -70,11 +83,24 @@
     #define DEVICEID "60c9e927643cf850d09eed75"
     #define CMDCHANNEL "6210378"
     #define DEVICENAME "MONKEY STA"
-    #define HEIGHT 225
+    #define HEIGHT 245
     #define LACK   10
     #define NORMAL 70
     #define WARN 110
     #define DANGER 140
+    #define RAINFACTOR 2
+#endif
+
+
+#ifdef WATPAR
+    #define DEVICEID "61404414605a5f374ca0605d"
+    #define CMDCHANNEL "6210380"
+    #define DEVICENAME "MONKEY STA"
+    #define HEIGHT 214
+    #define LACK   30
+    #define NORMAL 140
+    #define WARN 160
+    #define DANGER 200
     #define RAINFACTOR 2
 #endif
 

@@ -18,9 +18,11 @@
 */
 
 
-#define WATPO 1  //DEVICE ID 
+#define PHOTOTYPE 1  //DEVICE ID 
 #define WRITESTATE 1 //0 not write 1 write
 
+
+#include <WiFi.h>
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <EEPROM.h>
@@ -32,6 +34,7 @@
 #include "eepromAddress.h"
 #include "global.h"
 #include "EEPROM_writeall.h"
+#include <esp_bt.h>
 
 
 //For interupt
@@ -85,7 +88,7 @@ int warnLevel = 200;
 int dangerLevel = 250;
 int rainFactor = 2;
 
-int interval = 15; //in minute
+int interval = 10; //in minute
 #define SECONDS_DS(seconds) ((seconds)*1000UL);
 
 unsigned long previousMillis = 0;
@@ -150,6 +153,9 @@ ISR_PREFIX void rainCountFunc()
   Serial.println(rainCount);
 }
 
+//sleep mode 
+#define TIME_MICRO_SECONDS 1000000ULL 
+
 
 void writeDefaultParam() {
 
@@ -158,7 +164,7 @@ void writeDefaultParam() {
   delay(1000);
   writeEEPROM(ADS_CMDCHANNEL, CMDCHANNEL);
   delay(500);
-  EEPROM_writeAnything(ADS_INTERVAL, 5);
+  EEPROM_writeAnything(ADS_INTERVAL, 20);
   delay(200);
   EEPROM_writeAnything(ADS_STATIONHEIGHT, HEIGHT);
   delay(200);
@@ -210,6 +216,8 @@ void setup()
   delay(1000);
   printParameter();
 
+  //beforeLevel = messureWaterLevel();
+
   hdc1080.begin(0x40);
   nb.begin();
   setupMQTT();
@@ -220,6 +228,12 @@ void setup()
   sendDataToServer();
 
   previousMillis = millis();
+  unsigned long duration = SECONDS_DS(interval*60);
+  //esp_sleep_enable_timer_wakeup(duration); 
+   
+  //  WiFi.disconnect(true);
+  //  btStop();
+  
 }
 
 void loop()
@@ -231,13 +245,16 @@ void loop()
        sendDataToServer();
         
         MM.reset();
+     // 
       }
  
     if(touchRead(33) <2){
       messureWaterLevel();
     }
-   
+   // esp_light_sleep_start();
     
+   //Serial.println(nb.getSignal());
+   //delay(1000);
     
       
 
