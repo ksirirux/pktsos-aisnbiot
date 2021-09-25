@@ -18,7 +18,7 @@
 */
 
 
-#define PHOTOTYPE 1  //DEVICE ID 
+#define KAONIYOM2 1  //DEVICE ID 
 #define WRITESTATE 1 //0 not write 1 write
 
 
@@ -164,7 +164,7 @@ void writeDefaultParam() {
   delay(1000);
   writeEEPROM(ADS_CMDCHANNEL, CMDCHANNEL);
   delay(500);
-  EEPROM_writeAnything(ADS_INTERVAL, 20);
+  EEPROM_writeAnything(ADS_INTERVAL, 5);
   delay(200);
   EEPROM_writeAnything(ADS_STATIONHEIGHT, HEIGHT);
   delay(200);

@@ -67,6 +67,19 @@
     #define DANGER 240
     #define RAINFACTOR 2
 #endif
+
+#ifdef KAONIYOM2
+    #define DEVICEID "614d89a19cf7e14568ea52e6"
+    #define CMDCHANNEL "6210313"
+    #define DEVICENAME "KAONIYOM2"
+     #define HEIGHT 367
+    #define LACK   50
+    #define NORMAL 160
+    #define WARN 200
+    #define DANGER 240
+    #define RAINFACTOR 2
+#endif
+
 #ifdef PRUGMAWAR
     #define DEVICEID "60c9e927643cf850d09eed68"
     #define CMDCHANNEL "6210368"
