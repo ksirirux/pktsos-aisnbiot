@@ -117,5 +117,26 @@
     #define RAINFACTOR 2
 #endif
 
+#ifdef NONGTAKRA
+    #define DEVICEID "614eb86482dbf83abc664f2f"
+    #define CMDCHANNEL "6210314"
+    #define DEVICENAME "NONGTAKRA"
+    #define HEIGHT 175
+    #define LACK   30
+    #define NORMAL 90
+    #define WARN 130
+    #define DANGER 160
+    #define RAINFACTOR 1
+#endif
 
-
+#ifdef TARMAI
+    #define DEVICEID "60c9e927643cf850d09eed6b"
+    #define CMDCHANNEL "6210381"
+    #define DEVICENAME "TARMAI"
+    #define HEIGHT 420
+    #define LACK   100
+    #define NORMAL 200
+    #define WARN 250
+    #define DANGER 300
+    #define RAINFACTOR 1
+#endif
