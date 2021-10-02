@@ -71,15 +71,6 @@
 #ifdef KAONIYOM2
     #define DEVICEID "614d89a19cf7e14568ea52e6"
     #define CMDCHANNEL "6210313"
-<<<<<<< HEAD
-    #define DEVICENAME "KAONIYOM2"
-     #define HEIGHT 367
-    #define LACK   50
-    #define NORMAL 160
-    #define WARN 200
-    #define DANGER 240
-    #define RAINFACTOR 2
-=======
     #define DEVICENAME "KAONIYOM 2"
     #define HEIGHT 407
     #define LACK   90
@@ -87,7 +78,6 @@
     #define WARN 230
     #define DANGER 280
     #define RAINFACTOR 1
->>>>>>> fc1dc9734e44f27ad20f6d51186db2a6b877186d
 #endif
 
 #ifdef PRUGMAWAR
@@ -127,17 +117,16 @@
     #define RAINFACTOR 2
 #endif
 
+
+
 #ifdef TARMAI
-    #define DEVICEID "61404414605a5f374ca0605d"
+    #define DEVICEID "60c9e927643cf850d09eed6b"
     #define CMDCHANNEL "6210381"
-    #define DEVICENAME "TARMAI STA"
+    #define DEVICENAME "TARMAI"
     #define HEIGHT 420
     #define LACK   100
-    #define NORMAL 250
-    #define WARN 300
-    #define DANGER 350
+    #define NORMAL 200
+    #define WARN 250
+    #define DANGER 300
     #define RAINFACTOR 1
 #endif
-
-
-

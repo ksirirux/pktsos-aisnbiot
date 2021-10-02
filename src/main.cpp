@@ -18,7 +18,11 @@
 */
 
 
+<<<<<<< HEAD
 #define TARMAI 1  //DEVICE ID 
+=======
+#define NONGTAKRA 1  //DEVICE ID 
+>>>>>>> 4011f5433bbdcebe3581dfa04b5262a6671a57f3
 #define WRITESTATE 1 //0 not write 1 write
 
 
@@ -47,6 +51,7 @@
 AIS_SIM7020E_API nb;
 ClosedCube_HDC1080 hdc1080;
 Ultrasonic ultrasonic(14, 15);
+
 
 //#define NODE_ID 0010001 // id of device
 
