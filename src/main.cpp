@@ -8,7 +8,7 @@
     |     27 reset      |
     13 FOR REED PIN RAIN GUAGE
     14 TRIG ULTRA SONIC 
-    15 ECHO ULTRA SONIC
+    15 ECHO ULTRA SONIC    
 
     33 TOUCH TO READ DATA
     4 TOUCH TO SEND DATA
@@ -18,11 +18,8 @@
 */
 
 
-<<<<<<< HEAD
-#define TARMAI 1  //DEVICE ID 
-=======
-#define NONGTAKRA 1  //DEVICE ID 
->>>>>>> 4011f5433bbdcebe3581dfa04b5262a6671a57f3
+
+#define SOLAR_FARM 1  //DEVICE ID 
 #define WRITESTATE 1 //0 not write 1 write
 
 
@@ -42,7 +39,7 @@
 
 
 //For interupt
-#ifdef ESP8266 || ESP32
+#ifdef  ESP32
 #define ISR_PREFIX ICACHE_RAM_ATTR
 #else
 #define ISR_PREFIX
@@ -226,7 +223,9 @@ void setup()
   hdc1080.begin(0x40);
   nb.begin();
   setupMQTT();
+  
   beforeLevel = messureWaterLevel();
+  Serial.printf("before level %d \n",beforeLevel);
   nb.setCallback(callback);
   regisDevice();
   delay(1000);
@@ -274,7 +273,8 @@ void setupMQTT()
   }
   cmdChannel = readEEPROM(ADS_CMDCHANNEL).data;
   sprintf(CH, MQTTChannel, cmdChannel);
-  nb.subscribe(CH, subQoS);
+  //Serial.println(CH);
+  //nb.subscribe(CH, subQoS); //
   //  nb.unsubscribe(topic);
 }
 void connectStatus()

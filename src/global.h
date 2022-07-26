@@ -30,7 +30,7 @@
 #endif
 
 
-#ifdef TEST
+/*#ifdef TEST
     
     #define DEVICEID "60c9e927643cf850d09eed66"
     #define CMDCHANNEL "6210361"
@@ -42,7 +42,7 @@
     #define DANGER 250
     #define RAINFACTOR 2
    
-#endif
+#endif*/
 
 #ifdef KLONGHUAKLONG
     #define DEVICEID "60c9e927643cf850d09eed63"
@@ -56,7 +56,7 @@
     #define RAINFACTOR 2
 #endif
 
-#ifdef KAONIYOM
+/*#ifdef KAONIYOM
     #define DEVICEID "60c9e927643cf850d09eed67"
     #define CMDCHANNEL "6210311"
     #define DEVICENAME "KAONIYOM"
@@ -66,7 +66,7 @@
     #define WARN 200
     #define DANGER 240
     #define RAINFACTOR 2
-#endif
+#endif*/
 
 #ifdef KAONIYOM2
     #define DEVICEID "614d89a19cf7e14568ea52e6"
@@ -92,7 +92,7 @@
     #define RAINFACTOR 2
 #endif
 
-#ifdef MONKEY
+/*#ifdef MONKEY
     #define DEVICEID "60c9e927643cf850d09eed75"
     #define CMDCHANNEL "6210378"
     #define DEVICENAME "MONKEY STA"
@@ -102,9 +102,9 @@
     #define WARN 110
     #define DANGER 140
     #define RAINFACTOR 2
-#endif
+#endif*/
 
-
+/*
 #ifdef WATPAR
     #define DEVICEID "61404414605a5f374ca0605d"
     #define CMDCHANNEL "6210380"
@@ -115,9 +115,19 @@
     #define WARN 160
     #define DANGER 200
     #define RAINFACTOR 2
+#endif*/
+
+#ifdef SOLAR_FARM
+    #define DEVICEID "62c6b627f5c02b4838d2d58c"
+    #define CMDCHANNEL "6210950"
+    #define DEVICENAME "SOLAR FARM"
+    #define HEIGHT 215
+    #define LACK   20
+    #define NORMAL 100
+    #define WARN 150
+    #define DANGER 200
+    #define RAINFACTOR 1
 #endif
-
-
 
 #ifdef TARMAI
     #define DEVICEID "60c9e927643cf850d09eed6b"
@@ -130,3 +140,18 @@
     #define DANGER 300
     #define RAINFACTOR 1
 #endif
+
+#ifdef HOSPITAL
+    #define DEVICEID "62c6c582f5c02b4838d2d58d"
+    #define CMDCHANNEL "6211120"
+    #define DEVICENAME "HOSPITAL"
+    #define HEIGHT 390
+    #define LACK   100
+    #define NORMAL 200
+    #define WARN 250
+    #define DANGER 300
+    #define RAINFACTOR 1
+#endif
+
+
+
