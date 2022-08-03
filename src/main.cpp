@@ -19,7 +19,7 @@
 
 
 
-#define KAONIYOM2 1  //DEVICE ID 
+#define KAONIYOM2  //DEVICE ID 
 #define WRITESTATE 1 //0 not write 1 write
 
 
@@ -244,8 +244,8 @@ void setup()
   unsigned long duration = SECONDS_DS(interval*60);
   //esp_sleep_enable_timer_wakeup(duration); 
    
-  //  WiFi.disconnect(true);
-  //  btStop();
+    WiFi.disconnect(true);
+    btStop();
   
 }
 

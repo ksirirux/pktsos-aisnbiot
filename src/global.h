@@ -104,7 +104,7 @@
     #define RAINFACTOR 2
 #endif*/
 
-/*
+
 #ifdef WATPAR
     #define DEVICEID "61404414605a5f374ca0605d"
     #define CMDCHANNEL "6210380"
@@ -115,7 +115,7 @@
     #define WARN 160
     #define DANGER 200
     #define RAINFACTOR 2
-#endif*/
+#endif
 
 #ifdef SOLAR_FARM
     #define DEVICEID "62c6b627f5c02b4838d2d58c"
