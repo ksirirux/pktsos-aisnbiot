@@ -19,7 +19,7 @@
 
 
 
-#define SOLAR_FARM 1  //DEVICE ID 
+#define KAONIYOM2 1  //DEVICE ID 
 #define WRITESTATE 1 //0 not write 1 write
 
 
@@ -64,10 +64,19 @@ String payload;                  //Your payload   < 500 characters
 String username = MQTT_USER;     //username for mqtt server, username <= 100 characters
 String password = MQTT_PASSWORD; //password for mqtt server, password <= 100 characters
 
+int keepalive     = 60;               //keepalive time (second)
+int version       = 3;                //MQTT veresion 3(3.1), 4(3.1.1)
+int cleansession  = 1;                //cleanssion : 0, 1
+int willflag      = 1; 
+
 unsigned int subQoS =0;
 unsigned int pubQoS = 0;
+unsigned int will_qos = 0;
+unsigned int will_retain = 0;
 unsigned int pubRetained = 0;
 unsigned int pubDuplicate = 0;
+
+String willOption = nb.willConfig("will_topic",will_qos,will_retain,"will_msg");
 
 int deviceState = 0; // 0 test 1 real
 //Channel Recieve
@@ -90,7 +99,7 @@ int warnLevel = 200;
 int dangerLevel = 250;
 int rainFactor = 2;
 
-int interval = 10; //in minute
+int interval = 30; //in minute
 #define SECONDS_DS(seconds) ((seconds)*1000UL);
 
 unsigned long previousMillis = 0;
@@ -166,7 +175,7 @@ void writeDefaultParam() {
   delay(1000);
   writeEEPROM(ADS_CMDCHANNEL, CMDCHANNEL);
   delay(500);
-  EEPROM_writeAnything(ADS_INTERVAL, 10);
+  EEPROM_writeAnything(ADS_INTERVAL, 15);
   delay(200);
   EEPROM_writeAnything(ADS_STATIONHEIGHT, HEIGHT);
   delay(200);
@@ -267,14 +276,15 @@ void loop()
 //=========== MQTT Function ================
 void setupMQTT()
 {
-  if (!nb.connectMQTT(address, serverPort, deviceID, username, password))
+  //if (!nb.connectMQTT(address, serverPort, deviceID, username, password))
+  if(!nb.connectAdvanceMQTT(address,serverPort,deviceID,username,password,keepalive,version,cleansession,willflag,willOption))
   {
     Serial.println("\nconnectMQTT");
   }
   cmdChannel = readEEPROM(ADS_CMDCHANNEL).data;
   sprintf(CH, MQTTChannel, cmdChannel);
   //Serial.println(CH);
-  //nb.subscribe(CH, subQoS); //
+  nb.subscribe(CH, subQoS); //
   //  nb.unsubscribe(topic);
 }
 void connectStatus()
