@@ -14,7 +14,7 @@
     #define NORMAL 120
     #define WARN 140
     #define DANGER 180
-    #define RAINFACTOR 
+    #define RAINFACTOR 1
 #endif
 
 #ifdef PHOTOTYPE
