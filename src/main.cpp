@@ -19,7 +19,7 @@
 
 
 
-#define KAONIYOM2  //DEVICE ID 
+#define MONKEY  //DEVICE ID 
 #define WRITESTATE 1 //0 not write 1 write
 
 
@@ -99,7 +99,7 @@ int warnLevel = 200;
 int dangerLevel = 250;
 int rainFactor = 2;
 
-int interval = 30; //in minute
+int interval = 5; //in minute
 #define SECONDS_DS(seconds) ((seconds)*1000UL);
 
 unsigned long previousMillis = 0;

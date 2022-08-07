@@ -14,7 +14,7 @@
     #define NORMAL 120
     #define WARN 140
     #define DANGER 180
-    #define RAINFACTOR 2
+    #define RAINFACTOR 
 #endif
 
 #ifdef PHOTOTYPE
@@ -26,7 +26,7 @@
     #define NORMAL 110
     #define WARN 130
     #define DANGER 160
-    #define RAINFACTOR 2
+    #define RAINFACTOR 1
 #endif
 
 
@@ -53,7 +53,7 @@
     #define NORMAL 180
     #define WARN 230
     #define DANGER 300
-    #define RAINFACTOR 2
+    #define RAINFACTOR 1
 #endif
 
 /*#ifdef KAONIYOM
@@ -89,10 +89,10 @@
     #define NORMAL 100
     #define WARN 150
     #define DANGER 250
-    #define RAINFACTOR 2
+    #define RAINFACTOR 1
 #endif
 
-/*#ifdef MONKEY
+#ifdef MONKEY
     #define DEVICEID "60c9e927643cf850d09eed75"
     #define CMDCHANNEL "6210378"
     #define DEVICENAME "MONKEY STA"
@@ -101,8 +101,8 @@
     #define NORMAL 70
     #define WARN 110
     #define DANGER 140
-    #define RAINFACTOR 2
-#endif*/
+    #define RAINFACTOR 1
+#endif
 
 
 #ifdef WATPAR
@@ -114,7 +114,7 @@
     #define NORMAL 140
     #define WARN 160
     #define DANGER 200
-    #define RAINFACTOR 2
+    #define RAINFACTOR 1
 #endif
 
 #ifdef SOLAR_FARM
