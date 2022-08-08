@@ -30,7 +30,7 @@
 #endif
 
 
-/*#ifdef TEST
+#ifdef TEST
     
     #define DEVICEID "60c9e927643cf850d09eed66"
     #define CMDCHANNEL "6210361"
@@ -42,7 +42,7 @@
     #define DANGER 250
     #define RAINFACTOR 2
    
-#endif*/
+#endif
 
 #ifdef KLONGHUAKLONG
     #define DEVICEID "60c9e927643cf850d09eed63"

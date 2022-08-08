@@ -19,7 +19,7 @@
 
 
 
-#define MONKEY  //DEVICE ID 
+#define KAONIYOM2 //DEVICE ID 
 #define WRITESTATE 1 //0 not write 1 write
 
 
@@ -139,7 +139,6 @@ struct eepromData {
 
 
 
-
 void writeEEPROM(int address, String data);
 eepromData readEEPROM(int address) ;
 
@@ -175,7 +174,7 @@ void writeDefaultParam() {
   delay(1000);
   writeEEPROM(ADS_CMDCHANNEL, CMDCHANNEL);
   delay(500);
-  EEPROM_writeAnything(ADS_INTERVAL, 15);
+  EEPROM_writeAnything(ADS_INTERVAL, 30);
   delay(200);
   EEPROM_writeAnything(ADS_STATIONHEIGHT, HEIGHT);
   delay(200);
@@ -232,7 +231,7 @@ void setup()
   hdc1080.begin(0x40);
   nb.begin();
   setupMQTT();
-  
+
   beforeLevel = messureWaterLevel();
   Serial.printf("before level %d \n",beforeLevel);
   nb.setCallback(callback);
@@ -626,3 +625,4 @@ void writeEEPROM(int address, String data) {
   EEPROM.write(address + _size, '\0');
   EEPROM.commit();
 }
+
