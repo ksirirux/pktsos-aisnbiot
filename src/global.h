@@ -145,8 +145,20 @@
     #define DEVICEID "62c6c582f5c02b4838d2d58d"
     #define CMDCHANNEL "6211120"
     #define DEVICENAME "HOSPITAL"
-    #define HEIGHT 390
-    #define LACK   100
+    #define HEIGHT 257
+    #define LACK   50
+    #define NORMAL 185
+    #define WARN 215
+    #define DANGER 250
+    #define RAINFACTOR 1
+#endif
+
+#ifdef KLONGHUISAI
+    #define DEVICEID "62f75b27822ee0002039db75"
+    #define CMDCHANNEL "6211123"
+    #define DEVICENAME "KLONGHUISAI"
+    #define HEIGHT 400
+    #define LACK   50
     #define NORMAL 200
     #define WARN 250
     #define DANGER 300

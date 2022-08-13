@@ -19,7 +19,7 @@
 
 
 
-#define KAONIYOM2 //DEVICE ID 
+#define KLONGHUISAI //DEVICE ID 
 #define WRITESTATE 1 //0 not write 1 write
 
 
@@ -275,8 +275,8 @@ void loop()
 //=========== MQTT Function ================
 void setupMQTT()
 {
-  //if (!nb.connectMQTT(address, serverPort, deviceID, username, password))
-  if(!nb.connectAdvanceMQTT(address,serverPort,deviceID,username,password,keepalive,version,cleansession,willflag,willOption))
+  if (!nb.connectMQTT(address, serverPort, deviceID, username, password))
+  //if(!nb.connectAdvanceMQTT(address,serverPort,deviceID,username,password,keepalive,version,cleansession,willflag,willOption))
   {
     Serial.println("\nconnectMQTT");
   }
