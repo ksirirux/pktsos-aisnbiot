@@ -252,13 +252,17 @@ void loop()
 {
   nb.MQTTresponse();
   unsigned long duration = SECONDS_DS(interval*60);
-   if(MM.get() > duration){
+   /*if(MM.get() > duration){
        
        sendDataToServer();
         
         MM.reset();
      // 
-      }
+    }*/
+    if (millis()-previousMillis > duration){
+      sendDataToServer();
+      previousMillis = millis();
+    }
  
     if(touchRead(33) <2){
       messureWaterLevel();
